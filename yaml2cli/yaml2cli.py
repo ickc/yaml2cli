@@ -7,8 +7,6 @@ import yaml
 import yamlordereddictloader
 from itertools import product
 
-__version__ = '0.3'
-
 
 def option2arg(option, var, loop, host='cori'):
     '''Covert options as a Python dictionary to a string in cli arg style.
