@@ -21,7 +21,7 @@ pandocArgReadmePypi := $(pandocArgCommon) -s -t rst --reference-location=block -
 docs := docs/index.html README.md README.rst README.html
 # Main Targets ########################################################################################################################################################################################
 
-all: $(docs)
+docs: $(docs)
 readme: docs
 test: pytest pep8
 	coverage html
