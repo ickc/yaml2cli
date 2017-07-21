@@ -18,7 +18,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 # Import version number
 version = {}
-with open("yaml2cli" + path.sep + "version.py") as f:
+with open(path.join("yaml2cli", "version.py")) as f:
     exec(f.read(), version)
 version = version['__version__']
 
