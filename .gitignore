@@ -8,7 +8,7 @@ __pycache__/
 
 # pypi
 dist/
-pantable.egg-info/
+yaml2cli.egg-info/
 
 # coverage
 .coverage

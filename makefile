@@ -30,11 +30,11 @@ testFull: pytest pep8 pylint
 
 clean:
 	rm -f .coverage README.html
-	rm -rf htmlcov pantable.egg-info
+	rm -rf htmlcov yaml2cli.egg-info
 	find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
 Clean:
 	rm -f .coverage $(docs)
-	rm -rf htmlcov pantable.egg-info
+	rm -rf htmlcov yaml2cli.egg-info
 	find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
 
 # Making dependancies #################################################################################################################################################################################
@@ -72,7 +72,7 @@ dev:
 	$(pip) install -e .[test]
 
 pytest:
-	$(python) -m pytest -vv --cov=pantable tests
+	$(python) -m pytest -vv --cov=yaml2cli tests
 
 # check python styles
 pep8:
@@ -84,7 +84,7 @@ pyflakes:
 flake8:
 	flake8 .
 pylint:
-	pylint pantable
+	pylint yaml2cli
 
 # cleanup python
 autopep8:
