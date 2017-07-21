@@ -1,0 +1,21 @@
+# macOS files
+.DS_Store
+
+# python auxiliary 
+__pycache__/
+.cache
+*.pyc
+
+# pypi
+dist/
+pantable.egg-info/
+
+# coverage
+.coverage
+htmlcov/
+
+# pycharm
+.idea/
+
+# rst2html
+README.html
