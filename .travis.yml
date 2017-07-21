@@ -29,8 +29,10 @@ before_script:
   - |
     if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]] || [[ "$TRAVIS_PYTHON_VERSION" == "pypy" ]]; then
       mv setup.py setup.py.temp
+      mv yaml2cli/version.py yaml2cli/version.py.temp
       pasteurize -wnj 4 .
       mv setup.py.temp setup.py
+      mv yaml2cli/version.py.temp yaml2cli/version.py
     fi
 # command to run tests
 script:
@@ -43,8 +45,10 @@ before_deploy:
   # pasteurize except setup.py
   - |
     mv setup.py setup.py.temp
+    mv yaml2cli/version.py yaml2cli/version.py.temp
     pasteurize -wnj 4 .
     mv setup.py.temp setup.py
+    mv yaml2cli/version.py.temp yaml2cli/version.py
   # prepare wheel for py2
   - pip2 install wheel
   - python2 setup.py bdist_wheel
