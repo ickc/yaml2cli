@@ -9,13 +9,14 @@ from itertools import product
 
 __version__ = '0.3'
 
+
 def option2arg(option, var, loop, host='cori'):
     '''Covert options as a Python dictionary to a string in cli arg style.
-    
+
     Parameters
     ----------
     option: dict
-        spec: 
+        spec:
             - keys are the cli options. Single letter will be appended ``-``,
             otherwise ``--``
             - values are either list, dict, None, or string-like.
@@ -30,12 +31,12 @@ def option2arg(option, var, loop, host='cori'):
         Values of all keys forms a Cartesian product.
         They behaves like nested loops where each key (variables) loop through all values.
     host: str
-    
+
     Return
     ------
     str
         A string of the command line arguments
-    
+
     Example
     -------
     >>> option = {'n': 3, 'test': ['case1', 'case2'],
@@ -98,7 +99,7 @@ def option2arg(option, var, loop, host='cori'):
 def dict2command(arg_dict, host='cori'):
     '''Covert a dictionary with a predefined spec to a list of commands to be
         run in shell
-    
+
     Parameters
     ----------
     arg_dict: dict
@@ -107,12 +108,12 @@ def dict2command(arg_dict, host='cori'):
               command
             - has key ``option``, with value as a list. Each element in the
               list respect the spec defined in option2arg
-    
+
     Return
     ------
     list of str
         A list of strings, where each is a command with args to be run in shell
-    
+
     Example
     -------
     >>> arg_dict = {'command': 'my_program',
@@ -139,7 +140,7 @@ def script_generator(modes, script, metadata):
     metadata: dict
         a dict with keys of each mode in modes,
         with values defined according to the spec in dict2command
-    
+
     Return
     ------
     str
@@ -148,7 +149,7 @@ def script_generator(modes, script, metadata):
     command_list = []
     for mode in modes:
         command_list += dict2command(metadata[mode])
-    return script + '\n' + '\n'.join(command_list) +'\n'
+    return script + '\n' + '\n'.join(command_list) + '\n'
 
 
 def main(args):
@@ -176,9 +177,9 @@ if __name__ == "__main__":
 
     # define args
     parser.add_argument('mode', nargs='+',
-                    help='The mode of the script generated.')
+                        help='The mode of the script generated.')
     parser.add_argument('-v', '--version', action='version',
-                        version='%(prog)s {}'.format(__version__))  
+                        version='%(prog)s {}'.format(__version__))
     parser.add_argument('-o', '--output', type=argparse.FileType('w'),
                         help='output script', default=sys.stdout)
     parser.add_argument('-y', '--yaml', type=argparse.FileType('r'),
