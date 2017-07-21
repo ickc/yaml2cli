@@ -41,7 +41,7 @@ def option2arg(option, var, loop, host='cori'):
     -------
     >>> option = {'n': 3, 'test': ['case1', 'case2'],
                   'c': {'cori': 10, 'gordita': 1}, 'flag': None}
-    >>> option2arg(option, 'cori')
+    >>> option2arg(option, None, None, 'cori')
     '--flag --test case1 case2 -c 10 -n 3'
     '''
     args = []
