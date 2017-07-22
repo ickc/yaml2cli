@@ -3,6 +3,7 @@ language: python
 cache: pip
 # build matrix: different python and pandoc versions
 python:
+  - "2.6"
   - "2.7"
   - "3.3"
   - "3.4"
@@ -10,54 +11,27 @@ python:
   - "3.6"
   - "3.7-dev" # 3.6 development branch
   - "nightly" # currently points to 3.7-dev
-  # pypy (version info from [Changelogs — PyPy documentation](http://doc.pypy.org/en/latest/index-of-whatsnew.html))
-  # - "pypy"  # PyPy2.7 5.3.1 (CPython 2.7 compatible)
-  # - "pypy3" # PyPy3 2.4.0 (CPython 3.2 compatible)
 matrix:
   allow_failures:
     - python: "3.7-dev"
     - python: "nightly"
-    # - python: "pypy3"
   fast_finish: true
 # install dependencies
 install:
-  # latest pip dropped support for py3.2, which is the version of python in pypy3
-  - if [[ "$TRAVIS_PYTHON_VERSION" != "pypy3" ]]; then pip install -U pip; fi
+  - pip install -U pip
   - pip install -e .[test]
 before_script:
-  # pasteurize for py2 only, except setup.py
-  - |
-    if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]] || [[ "$TRAVIS_PYTHON_VERSION" == "pypy" ]]; then
-      mv setup.py setup.py.temp
-      mv yaml2cli/version.py yaml2cli/version.py.temp
-      pasteurize -wnj 4 .
-      mv setup.py.temp setup.py
-      mv yaml2cli/version.py.temp yaml2cli/version.py
-    fi
 # command to run tests
 script:
   - make -j4 test
 after_success:
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.5" ]]; then coveralls; else printf "skip coveralls"; fi
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then coveralls; else printf "skip coveralls"; fi
 before_deploy:
-  # build unpasteurized python3 wheel
-  - python3 setup.py bdist_wheel
-  # pasteurize except setup.py
-  - |
-    mv setup.py setup.py.temp
-    mv yaml2cli/version.py yaml2cli/version.py.temp
-    pasteurize -wnj 4 .
-    mv setup.py.temp setup.py
-    mv yaml2cli/version.py.temp yaml2cli/version.py
-  # prepare wheel for py2
-  - pip2 install wheel
-  - python2 setup.py bdist_wheel
 deploy:
   provider: pypi
   user: ickc
   password: $pypi_password
-  # do not add bdist_wheel here, since it is done above
-  distributions: "sdist"
+  distributions: "sdist bdist_wheel"
   skip_cleanup: true
   on:
     tags: true
