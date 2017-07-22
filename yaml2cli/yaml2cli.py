@@ -1,5 +1,8 @@
-#!/usr/bin/env python
+"""yaml2cli: Script Generator that organizes cli args by YAML
 
+See:
+https://github.com/ickc/yaml2cli
+"""
 
 import argparse
 import sys
