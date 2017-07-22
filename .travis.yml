@@ -3,7 +3,6 @@ language: python
 cache: pip
 # build matrix: different python and pandoc versions
 python:
-  - "2.6"
   - "2.7"
   - "3.3"
   - "3.4"
