@@ -13,7 +13,7 @@ import yamlordereddictloader
 from itertools import product
 
 
-__version__ = '0.3.6'
+__version__ = '0.5'
 
 
 def option2arg(option, var, loop, host='cori'):
