@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """yaml2cli: Script Generator that organizes cli args by YAML
 
 See:
@@ -9,6 +11,9 @@ import sys
 import yaml
 import yamlordereddictloader
 from itertools import product
+
+
+__version__ = '0.3.6'
 
 
 def option2arg(option, var, loop, host='cori'):
@@ -172,8 +177,8 @@ def main(args):
     args.output.write(script_generator(modes, script, metadata))
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+def cli():
+    parser = argparse.ArgumentParser(description='Script Generator that organizes cli args by YAML.')
     parser.set_defaults(func=main)
 
     # define args
@@ -193,3 +198,7 @@ if __name__ == "__main__":
     # parsing and run main
     args = parser.parse_args()
     args.func(args)
+
+
+if __name__ == "__main__":
+    cli()

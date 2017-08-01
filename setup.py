@@ -7,19 +7,19 @@ https://github.com/ickc/yaml2cli
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
 # To use a consistent encoding
-from codecs import open
+from io import open
 from os import path
 
-here = path.abspath(path.dirname(__file__))
-
 # Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open('README.rst', encoding='utf-8') as f:
     long_description = f.read()
 
 # Import version number
 version = {}
-with open(path.join("yaml2cli", "version.py")) as f:
-    exec(f.read(), version)
+with open(path.join('yaml2cli', 'yaml2cli.py'), encoding='utf-8') as f:
+    for line in f:
+        if line[0:14] == '__version__ = ':
+            exec(line, version)
 version = version['__version__']
 
 setup(
@@ -30,7 +30,7 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version=version,
 
-    description='yaml2cli: Script Generator that organizes cli args by YAML',
+    description='Script Generator that organizes cli args by YAML',
     long_description=long_description,
 
     # The project's main homepage.
@@ -116,7 +116,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'yaml2cli = yaml2cli:main'
+            'yaml2cli = yaml2cli.yaml2cli:cli'
         ],
     },
 )
