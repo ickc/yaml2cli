@@ -78,7 +78,7 @@ def option2arg(option, var, loop, host='cori'):
         # only evaluate loop when loop is not None
         if loop is not None:
             for i in range(n):
-                if isinstance(value, str):
+                if isinstance(combinations[i], str):
                     exec(keys[i] + ' = "' + combinations[i] + '"')
                 else:
                     exec(keys[i] + ' = ' + str(combinations[i]))
