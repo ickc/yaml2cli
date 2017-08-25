@@ -13,7 +13,7 @@ import yamlordereddictloader
 from itertools import product
 
 
-__version__ = '0.5.1'
+__version__ = '0.5.2'
 
 
 def option2arg(option, var, loop, branch):
