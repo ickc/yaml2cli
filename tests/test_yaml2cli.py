@@ -20,5 +20,5 @@ def test_dict2command():
                                            ('flag', None),
                                            ('n', 3),
                                            ('test', ['case1', 'case2'])])])])
-    assert dict2command(arg_dict) == [
+    assert dict2command(arg_dict, 'cori') == [
         'my_program -c 10 --flag -n 3 --test case1 case2']
