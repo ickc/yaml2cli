@@ -16,7 +16,7 @@ from itertools import product
 __version__ = '0.5.1'
 
 
-def option2arg(option, var, loop, host='cori'):
+def option2arg(option, var, loop, branch):
     '''Covert options as a Python dictionary to a string in cli arg style.
 
     Parameters
@@ -27,7 +27,7 @@ def option2arg(option, var, loop, host='cori'):
             otherwise ``--``
             - values are either list, dict, None, or string-like.
                 - for list, it becomes multiple argument of the option.
-                - for dict, its key will be used to lookup the host.
+                - for dict, its key will be used to lookup the branch.
                 - for None, it will be skipped. Useful for cli flag.
                 - for others, it will be converted to string.
     var: dict
@@ -36,7 +36,7 @@ def option2arg(option, var, loop, host='cori'):
         All values are list, or eval to a list.
         Values of all keys forms a Cartesian product.
         They behaves like nested loops where each key (variables) loop through all values.
-    host: str
+    branch: str
 
     Return
     ------
@@ -92,7 +92,7 @@ def option2arg(option, var, loop, host='cori'):
                 try:
                     arg.append(str(value[host]))
                 except KeyError:
-                    sys.stderr.write('Host {} is not supported.'.format(host))
+                    sys.stderr.write('Branch {} is not supported.'.format(branch))
             # eval if the string start with eval
             elif isinstance(value, str) and value[0:5] == 'eval ':
                 arg.append(eval(value[5:]))
@@ -102,7 +102,7 @@ def option2arg(option, var, loop, host='cori'):
     return args
 
 
-def dict2command(arg_dict, host='cori'):
+def dict2command(arg_dict, branch):
     '''Covert a dictionary with a predefined spec to a list of commands to be
         run in shell
 
@@ -126,17 +126,17 @@ def dict2command(arg_dict, host='cori'):
                     'option': [{'n': 3, 'test': ['case1', 'case2'],
                                 'c': {'cori': 10, 'gordita': 1},
                                 'flag': None}]}
-    >>> dict2command(arg_dict, host='cori')
+    >>> dict2command(arg_dict, branch='cori')
         ['my_program --flag --test case1 case2 -c 10 -n 3']
     '''
     commands = []
     for option in arg_dict['option']:
-        for arg in option2arg(option, arg_dict.get('var', None), arg_dict.get('loop', None), host):
+        for arg in option2arg(option, arg_dict.get('var', None), arg_dict.get('loop', None), branch):
             commands.append(arg_dict['command'] + ' ' + arg)
     return commands
 
 
-def script_generator(modes, script, metadata):
+def script_generator(modes, script, metadata, branch):
     '''
     Parameters
     ----------
@@ -154,7 +154,7 @@ def script_generator(modes, script, metadata):
     '''
     command_list = []
     for mode in modes:
-        command_list += dict2command(metadata[mode])
+        command_list += dict2command(metadata[mode], branch)
     return script + '\n' + '\n'.join(command_list) + '\n'
 
 
@@ -174,7 +174,7 @@ def main(args):
         else:
             modes.append(mode)
 
-    args.output.write(script_generator(modes, script, metadata))
+    args.output.write(script_generator(modes, script, metadata, args.branch))
 
 
 def cli():
@@ -192,8 +192,8 @@ def cli():
                         help='YAML metadata.', required=True)
     parser.add_argument('-p', '--path', type=argparse.FileType('r'),
                         help='shell script that define the paths.')
-    parser.add_argument('-H', '--host', required=True,
-                        help='The host that the output script is going to be run on.')
+    parser.add_argument('-H', '--branch', required=True,
+                        help='The branch that the output script is going to be run on, as a sub-key-value pairs under options.')
 
     # parsing and run main
     args = parser.parse_args()
