@@ -86,18 +86,20 @@ def option2arg(option, var, loop, branch):
         # Cases for value of option
         for key, value in option.items():
             arg.append('-' + key if len(key) == 1 else '--' + key)
-            if isinstance(value, list):
-                arg += value
-            elif isinstance(value, dict):
+            if isinstance(value, dict):
                 try:
-                    arg.append(str(value[host]))
+                    local_value = value[branch]
                 except KeyError:
                     sys.stderr.write('Branch {} is not supported.'.format(branch))
+            else:
+                local_value = value
+            if isinstance(local_value, list):
+                arg += local_value
             # eval if the string start with eval
-            elif isinstance(value, str) and value[0:5] == 'eval ':
-                arg.append(eval(value[5:]))
-            elif value is not None:
-                arg.append(str(value))
+            elif isinstance(local_value, str) and local_value[0:5] == 'eval ':
+                arg.append(eval(local_value[5:]))
+            elif local_value is not None:
+                arg.append(str(local_value))
         args.append(' '.join(arg))
     return args
 
