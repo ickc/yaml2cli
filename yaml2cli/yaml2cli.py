@@ -71,11 +71,15 @@ def option2arg(option, var, loop, branch):
         for key, value in loop.items():
             keys.append(key)
             # Cases for value of loop
-            if isinstance(value, list):
-                values.append(value)
+            if isinstance(value, dict):
+                local_value = value[branch]
+            else:
+                local_value = value
+            if isinstance(local_value, list):
+                values.append(local_value)
             # eval if the string start with eval
-            elif isinstance(value, str) and value[0:5] == 'eval ':
-                values.append(eval(value[5:]))
+            elif isinstance(local_value, str) and local_value[0:5] == 'eval ':
+                values.append(eval(local_value[5:]))
         n = len(keys)
     # loop through combinations. If values is [], then run exactly once
     for combinations in product(*values):
