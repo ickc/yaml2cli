@@ -55,10 +55,14 @@ def option2arg(option, var, loop, branch):
     # exec all var
     if var is not None:
         for key, value in var.items():
-            if isinstance(value, str):
-                exec(key + ' = "' + value + '"')
+            if isinstance(value, dict):
+                local_value = value[branch]
             else:
-                exec(key + ' = ' + str(value))
+                local_value = value
+            if isinstance(local_value, str):
+                exec(key + ' = "' + local_value + '"')
+            else:
+                exec(key + ' = ' + str(local_value))
 
     # get all keys and all values into separate lists
     values = []
