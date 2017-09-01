@@ -7,6 +7,7 @@ https://github.com/ickc/yaml2cli
 """
 
 import argparse
+import os
 import sys
 import yaml
 import yamlordereddictloader
@@ -14,6 +15,12 @@ from itertools import product
 
 
 __version__ = '0.5.4'
+
+
+def make_executable(path):
+    mode = os.stat(path).st_mode
+    mode |= (mode & 0o444) >> 2    # copy R bits to X
+    os.chmod(path, mode)
 
 
 def option2arg(option, var, loop, branch):
@@ -168,6 +175,19 @@ def script_generator(modes, script, metadata, branch):
     return script + '\n' + '\n'.join(command_list) + '\n'
 
 
+def flatten_list(metadata, modes):
+    '''get modes. metadata might contains shortcuts to a list of modes
+    TODO: do this recursively
+    '''
+    modes_flattened = []
+    for mode in modes:
+        if isinstance(metadata[mode], list):
+            modes_flattened += flatten_list(metadata, metadata[mode])
+        else:
+            modes_flattened.append(mode)
+    return modes_flattened
+
+
 def main(args):
     '''load the script and yaml specfied in args
     output a shell script
@@ -175,15 +195,7 @@ def main(args):
     '''
     metadata = yaml.load(args.yaml, Loader=yamlordereddictloader.Loader)
     script = args.path.read() if args.path else ''
-    # get modes. metadata might contains shortcuts to a list of modes
-    # TODO: do this recursively
-    modes = []
-    for mode in args.mode:
-        if isinstance(metadata[mode], list):
-            modes += metadata[mode]
-        else:
-            modes.append(mode)
-
+    modes = flatten_list(metadata, args.mode)
     args.output.write(script_generator(modes, script, metadata, args.branch))
 
 

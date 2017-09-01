@@ -1,6 +1,6 @@
 """
 """
-from .context import option2arg, dict2command
+from .context import option2arg, dict2command, flatten_list
 from collections import OrderedDict
 
 
@@ -22,3 +22,16 @@ def test_dict2command():
                                            ('test', ['case1', 'case2'])])])])
     assert dict2command(arg_dict, 'cori') == [
         'my_program -c 10 --flag -n 3 --test case1 case2']
+
+
+def test_flatten_list():
+    metadata = {
+        'a': ['b', 'c'],
+        'b': ['d', 'e'],
+        'c': 1,
+        'd': ['f', 'g'],
+        'e': 1,
+        'f': 1,
+        'g': 1
+    }
+    assert flatten_list(metadata, 'a') == ['f', 'g', 'e', 'c']
