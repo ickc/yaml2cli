@@ -182,9 +182,10 @@ def main(args):
         if not os.path.isdir(args.outdir):
             os.makedirs(args.outdir)
         for i, command in enumerate(command_list):
-            filepath = os.path.join(args.outdir, args.name + '-' + '{0:04}'.format(i) + '.sh')
+            i_padded = '{0:04}'.format(i)
+            filepath = os.path.join(args.outdir, args.name + '-' + i_padded + '.sh')
             with open(filepath, 'x') as f:
-                f.write(script + '\n' + command + '\n')
+                f.write(script.format(i_padded, args.name) + '\n' + command + '\n')
             make_executable(filepath)
 
 
@@ -206,7 +207,7 @@ def cli():
     parser.add_argument('-y', '--yaml', type=argparse.FileType('r'),
                         help='YAML metadata.', required=True)
     parser.add_argument('-p', '--path', type=argparse.FileType('r'),
-                        help='shell script that define the paths.')
+                        help='shell script that prepends the commands. If -d is used, 2 format strings can be supplied optionally.')
     parser.add_argument('-H', '--branch', required=True,
                         help='The branch that the output script is going to be run on, as a sub-key-value pairs under options.')
 
