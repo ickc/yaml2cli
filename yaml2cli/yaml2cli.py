@@ -176,8 +176,7 @@ def script_generator(modes, script, metadata, branch):
 
 
 def flatten_list(metadata, modes):
-    '''get modes. metadata might contains shortcuts to a list of modes
-    TODO: do this recursively
+    '''get modes recursively. metadata might contains shortcuts to a list of modes
     '''
     modes_flattened = []
     for mode in modes:
