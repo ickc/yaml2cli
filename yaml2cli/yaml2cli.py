@@ -174,7 +174,18 @@ def main(args):
     script = args.path.read() if args.path else ''
     modes = flatten_list(metadata, args.mode)
     command_list = (command for mode in modes for command in dict2command(metadata[mode], args.branch))
-    args.output.write(script + '\n' + '\n'.join(command_list) + '\n')
+    if args.outdir is None:
+        args.output.write(script + '\n' + '\n'.join(command_list) + '\n')
+        if args.output.name != '<stdout>':
+            make_executable(args.output.name)
+    else:
+        if not os.path.isdir(args.outdir):
+            os.makedirs(args.outdir)
+        for i, command in enumerate(command_list):
+            filepath = os.path.join(args.outdir, args.name + '-' + '{0:04}'.format(i) + '.sh')
+            with open(filepath, 'x') as f:
+                f.write(script + '\n' + command + '\n')
+            make_executable(filepath)
 
 
 def cli():
@@ -188,6 +199,10 @@ def cli():
                         version='%(prog)s {}'.format(__version__))
     parser.add_argument('-o', '--output', type=argparse.FileType('w'),
                         help='output script', default=sys.stdout)
+    parser.add_argument('-d', '--outdir',
+                        help='If used, ignore -o and stdout, output a script per command.')
+    parser.add_argument('-n', '--name', default='job',
+                        help='Must be used with -d. Job no. and .sh will be appended.')
     parser.add_argument('-y', '--yaml', type=argparse.FileType('r'),
                         help='YAML metadata.', required=True)
     parser.add_argument('-p', '--path', type=argparse.FileType('r'),
