@@ -14,7 +14,7 @@ import yamlordereddictloader
 from itertools import product
 
 
-__version__ = '0.6'
+__version__ = '0.6.1'
 
 
 def make_executable(path):
