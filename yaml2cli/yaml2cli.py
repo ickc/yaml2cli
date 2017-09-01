@@ -153,28 +153,6 @@ def dict2command(arg_dict, branch):
     return commands
 
 
-def script_generator(modes, script, metadata, branch):
-    '''
-    Parameters
-    ----------
-    modes: list of string
-    script: string
-        to be prepended to the commands
-    metadata: dict
-        a dict with keys of each mode in modes,
-        with values defined according to the spec in dict2command
-
-    Return
-    ------
-    str
-        a shell script
-    '''
-    command_list = []
-    for mode in modes:
-        command_list += dict2command(metadata[mode], branch)
-    return script + '\n' + '\n'.join(command_list) + '\n'
-
-
 def flatten_list(metadata, modes):
     '''get modes recursively. metadata might contains shortcuts to a list of modes
     '''
@@ -195,7 +173,8 @@ def main(args):
     metadata = yaml.load(args.yaml, Loader=yamlordereddictloader.Loader)
     script = args.path.read() if args.path else ''
     modes = flatten_list(metadata, args.mode)
-    args.output.write(script_generator(modes, script, metadata, args.branch))
+    command_list = (command for mode in modes for command in dict2command(metadata[mode], args.branch))
+    args.output.write(script + '\n' + '\n'.join(command_list) + '\n')
 
 
 def cli():
