@@ -11,8 +11,7 @@ import os
 import sys
 import yaml
 import yamlordereddictloader
-from itertools import product
-
+from itertools import product, islice, takewhile, count
 
 __version__ = '0.6.1'
 
@@ -173,15 +172,18 @@ def main(args):
     metadata = yaml.load(args.yaml, Loader=yamlordereddictloader.Loader)
     script = args.path.read() if args.path else ''
     modes = flatten_list(metadata, args.mode)
-    command_list = (command for mode in modes for command in dict2command(metadata[mode], args.branch))
+    command_iter = (command for mode in modes for command in dict2command(metadata[mode], args.branch))
     if args.outdir is None:
-        args.output.write(script + '\n' + '\n'.join(command_list) + '\n')
+        args.output.write(script + '\n' + '\n'.join(command_iter) + '\n')
         if args.output.name != '<stdout>':
             make_executable(args.output.name)
     else:
         if not os.path.isdir(args.outdir):
             os.makedirs(args.outdir)
-        for i, command in enumerate(command_list):
+        # a list where each element is N commands
+        N_commands_iter = command_iter if args.N == 1 else \
+            takewhile(bool, ('\n'.join(list(islice(command_iter, args.N))) for _ in count(0)))
+        for i, command in enumerate(N_commands_iter):
             i_padded = '{0:04}'.format(i)
             filepath = os.path.join(args.outdir, args.name + '-' + i_padded + '.sh')
             with open(filepath, 'x') as f:
@@ -201,7 +203,9 @@ def cli():
     parser.add_argument('-o', '--output', type=argparse.FileType('w'),
                         help='output script', default=sys.stdout)
     parser.add_argument('-d', '--outdir',
-                        help='If used, ignore -o and stdout, output a script per command.')
+                        help='If used, ignore -o and stdout, output a script per N command.')
+    parser.add_argument('-N', type=int, default=1,
+                        help='Number of jobs per script. Used with -d.')
     parser.add_argument('-n', '--name', default='job',
                         help='Must be used with -d. Job no. and .sh will be appended.')
     parser.add_argument('-y', '--yaml', type=argparse.FileType('r'),
