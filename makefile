@@ -30,12 +30,10 @@ testFull: pytest pep8 pylint
 
 clean:
 	rm -f .coverage README.html
-	rm -rf htmlcov yaml2cli.egg-info
+	rm -rf htmlcov yaml2cli.egg-info .cache dist
 	find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
-Clean:
-	rm -f .coverage $(docs)
-	rm -rf htmlcov yaml2cli.egg-info
-	find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
+Clean: clean
+	rm -f $(docs)
 
 # Making dependancies #################################################################################################################################################################################
 
