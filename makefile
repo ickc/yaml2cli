@@ -4,6 +4,7 @@ SHELL = /usr/bin/env bash
 python = python
 pip = pip
 
+yaml2cli = coverage run --branch -a yaml2cli/yaml2cli.py
 
 # pandoc
 HTMLVersion = html5
@@ -19,23 +20,37 @@ pandocArgReadmeGitHub = $(pandocArgCommon) --toc-depth=2 -s -t markdown_github -
 pandocArgReadmePypi = $(pandocArgCommon) -s -t rst --reference-location=block -f markdown+autolink_bare_uris-fancy_lists-implicit_header_references
 
 docs = docs/index.html README.md README.rst README.html
+
+examples = examples/mode1-small.sh examples/mode1-large.sh examples/mode2.sh examples/example2/mode2-0000.sh examples/example2/mode2-0001.sh examples/mode3.sh
+
 # Main Targets ########################################################################################################################################################################################
 
 docs: $(docs)
 readme: docs
-test: pytest pep8
+example: pytest $(examples)
+test: example pytest pep8
 	coverage html
 testFull: pytest pep8 pylint
 	coverage html
 
 clean:
-	rm -f .coverage README.html
-	rm -rf htmlcov yaml2cli.egg-info .cache dist
+	rm -f .coverage README.html $(examples)
+	rm -rf htmlcov yaml2cli.egg-info .cache dist examples/example2
+	find -maxdepth 1 -type f -name '.coverage*' -delete
 	find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
 Clean: clean
 	rm -f $(docs)
 
 # Making dependancies #################################################################################################################################################################################
+
+# $(examples)
+examples/mode1-%.sh: examples/example.yml examples/example.sh
+	$(yaml2cli) mode1 -y $< -p examples/example.sh -o $@ -H $*
+examples/%.sh: examples/example.yml examples/example.sh
+	$(yaml2cli) $* -y $< -p examples/example.sh -o $@
+# examples/example2/mode2-0001.sh is done for free
+examples/example2/mode2-0000.sh: examples/example.yml examples/example.sh
+	$(yaml2cli) mode2 -y $< -p examples/example.sh -d $(@D) -N 1 -n 'mode2'
 
 # readme
 ## index.html
@@ -70,7 +85,7 @@ dev:
 	$(pip) install -e .[test]
 
 pytest:
-	$(python) -m pytest -vv --cov=yaml2cli tests
+	$(python) -m pytest -vv --cov=yaml2cli --cov-branch tests
 
 # check python styles
 pep8:
