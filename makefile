@@ -1,24 +1,24 @@
-SHELL := /usr/bin/env bash
+SHELL = /usr/bin/env bash
 
 # configure engine
-python := python
-pip := pip
+python = python
+pip = pip
 
 
 # pandoc
-HTMLVersion := html5
-CSSURL:=https://cdn.jsdelivr.net/gh/ickc/markdown-latex-css
+HTMLVersion = html5
+CSSURL = https://cdn.jsdelivr.net/gh/ickc/markdown-latex-css
 # command line arguments
-pandocArgCommon := -f markdown+autolink_bare_uris-fancy_lists --toc -V linkcolorblue -V citecolor=blue -V urlcolor=blue -V toccolor=blue -M date="`date "+%B %e, %Y"`"
+pandocArgCommon = -f markdown+autolink_bare_uris-fancy_lists --toc -V linkcolorblue -V citecolor=blue -V urlcolor=blue -V toccolor=blue -M date="`date "+%B %e, %Y"`"
 ## MD
-pandocArgMD := -f markdown+abbreviations+autolink_bare_uris+markdown_attribute+mmd_header_identifiers+mmd_link_attributes+mmd_title_block+tex_math_double_backslash-latex_macros-auto_identifiers -t markdown+raw_tex-native_spans-simple_tables-multiline_tables-grid_tables-latex_macros -s --wrap=none --column=999 --atx-headers --reference-location=block --file-scope
+pandocArgMD = -f markdown+abbreviations+autolink_bare_uris+markdown_attribute+mmd_header_identifiers+mmd_link_attributes+mmd_title_block+tex_math_double_backslash-latex_macros-auto_identifiers -t markdown+raw_tex-native_spans-simple_tables-multiline_tables-grid_tables-latex_macros -s --wrap=none --column=999 --atx-headers --reference-location=block --file-scope
 ## HTML/ePub
-pandocArgHTML := $(pandocArgCommon) -t $(HTMLVersion) --toc-depth=2 -s -N -c $(CSSURL)/css/common.min.css -c $(CSSURL)/fonts/fonts.min.css
+pandocArgHTML = $(pandocArgCommon) -t $(HTMLVersion) --toc-depth=2 -s -N -c $(CSSURL)/css/common.min.css -c $(CSSURL)/fonts/fonts.min.css
 # GitHub README
-pandocArgReadmeGitHub := $(pandocArgCommon) --toc-depth=2 -s -t markdown_github --reference-location=block
-pandocArgReadmePypi := $(pandocArgCommon) -s -t rst --reference-location=block -f markdown+autolink_bare_uris-fancy_lists-implicit_header_references
+pandocArgReadmeGitHub = $(pandocArgCommon) --toc-depth=2 -s -t markdown_github --reference-location=block
+pandocArgReadmePypi = $(pandocArgCommon) -s -t rst --reference-location=block -f markdown+autolink_bare_uris-fancy_lists-implicit_header_references
 
-docs := docs/index.html README.md README.rst README.html
+docs = docs/index.html README.md README.rst README.html
 # Main Targets ########################################################################################################################################################################################
 
 docs: $(docs)
