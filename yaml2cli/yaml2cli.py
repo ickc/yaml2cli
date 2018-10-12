@@ -186,7 +186,7 @@ def main(args):
         for i, command in enumerate(N_commands_iter):
             i_padded = '{0:04}'.format(i)
             filepath = os.path.join(args.outdir, args.name + '-' + i_padded + '.sh')
-            with open(filepath, 'x') as f:
+            with open(filepath, 'w') as f:
                 f.write(script.format(i_padded, args.name) + '\n' + command + '\n')
             make_executable(filepath)
 
