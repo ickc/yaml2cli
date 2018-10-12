@@ -10,6 +10,8 @@ __pycache__/
 dist/
 yaml2cli.egg-info/
 
+.pytest_cache
+
 # coverage
 .coverage
 htmlcov/
@@ -19,3 +21,7 @@ htmlcov/
 
 # rst2html
 README.html
+
+# examples
+examples/example2/
+examples/mode*.sh
