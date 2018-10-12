@@ -1,0 +1,53 @@
+# This example demostrate the most useful pattern
+
+# using yaml anchor for code reuse
+option-template:
+  exampleAnchorKeyNotImportant: &exampleAnchor
+    exampleAnchor: 1
+
+# top level key is defined as "mode" in yaml2cli
+# mode1 demostrates the dispatch machanism from keys and values0
+mode1:
+  # command to run
+  command: example1.py
+  # option must be a list, even for 1 output
+  option:
+    # key value pair becomes `--key1 value`
+    - key1: value1
+      # single character key value becomes `-k value`
+      k: value
+      # list of values becomes `--key2 value1 value2`
+      key2:
+        - value1
+        - value2
+      # if value is dict, keys of dict is defined as "branch" in yaml2cli
+      nreal:
+        small: 8
+        large: 48
+      # this anchor is identical to inline `exampleAnchor: 1` here
+      # see more on the spec of yaml anchor
+      <<: *exampleAnchor
+      # null values
+      # ? operator means `--withoutvalue`
+      ? withoutvalue
+      # equivalent to
+      withoutvalue2: null # rendered as `--withoutvalue2`
+      # if you really mean `--withvalue null`
+      withvalue: "null"
+
+# mode2 demostrates list of option
+mode2:
+  command: example2.py
+  option:
+    - key1: value1
+    - key2: value2
+
+# mode3 demostrates advanced var, loop, eval construct
+mode3:
+  command: example3.py
+  var:
+    nreal: 8
+  loop:
+    name: eval ["sim{0:03}".format(i) for i in range(nreal)]
+  option:
+    - key: value
