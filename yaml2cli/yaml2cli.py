@@ -212,7 +212,7 @@ def cli():
                         help='YAML metadata.', required=True)
     parser.add_argument('-p', '--path', type=argparse.FileType('r'),
                         help='shell script that prepends the commands. If -d is used, 2 format strings can be supplied optionally.')
-    parser.add_argument('-H', '--branch', required=True,
+    parser.add_argument('-H', '--branch',
                         help='The branch that the output script is going to be run on, as a sub-key-value pairs under options.')
 
     # parsing and run main
