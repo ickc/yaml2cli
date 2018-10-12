@@ -95,7 +95,7 @@ setup(
     # $ pip install -e .[dev,test]
     extras_require={
         'dev': ['check-manifest'],
-        'test': ['pep8', 'pylint', 'pytest', 'pytest-cov', 'coverage', 'coveralls', 'future'],
+        'test': ['pycodestyle', 'pylint', 'pytest', 'pytest-cov', 'coverage', 'coveralls', 'future'],
     },
 
     # If there are data files included in your packages that need to be
