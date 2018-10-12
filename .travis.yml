@@ -21,7 +21,7 @@ install:
 before_script:
 # command to run tests
 script:
-  - make -j4 test
+  - make test
 after_success:
   - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then coveralls; else printf "skip coveralls"; fi
 before_deploy:
