@@ -46,8 +46,10 @@ Clean: clean
 # $(examples)
 examples/mode1-%.sh: examples/example.yml examples/example.sh
 	$(yaml2cli) mode1 -y $< -p examples/example.sh -o $@ -H $*
-examples/%.sh: examples/example.yml examples/example.sh
-	$(yaml2cli) $* -y $< -p examples/example.sh -o $@
+examples/mode2.sh: examples/example.yml examples/example.sh
+	$(yaml2cli) mode2 -y $< -p examples/example.sh -o $@
+examples/mode3.sh: examples/example.yml examples/example.sh
+	$(yaml2cli) mode3 -y $< -p examples/example.sh -o $@
 # examples/example2/mode2-0001.sh is done for free
 examples/example2/mode2-0000.sh: examples/example.yml examples/example.sh
 	$(yaml2cli) mode2 -y $< -p examples/example.sh -d $(@D) -N 1 -n 'mode2'
