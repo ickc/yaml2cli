@@ -51,3 +51,4 @@ mode3:
     name: eval ["sim{0:03}".format(i) for i in range(nreal)]
   option:
     - key: value
+      name: eval name
