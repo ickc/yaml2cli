@@ -31,6 +31,7 @@ before_deploy:
   # - pip install -U twine
 deploy:
   provider: pypi
+  server: https://upload.pypi.org/legacy/
   user: ickc
   password: $pypi_password
   distributions: "sdist bdist_wheel"
