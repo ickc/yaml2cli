@@ -6,10 +6,12 @@ python:
   - "3.5"
   - "3.6"
   - "3.7"
+  - "3.7-dev"
   - "3.8-dev"
-  - "nightly" # currently points to 3.7-dev
+  - "nightly"
 matrix:
   allow_failures:
+    - python: "3.7"
     - python: "3.8-dev"
     - python: "nightly"
   fast_finish: true
@@ -22,9 +24,9 @@ before_script:
 script:
   - make test
   # see the cli installed correctly
-  - make example -j3 yaml2cli=yaml2cli
+  - make example -j3 yaml2cli=yaml2cli -B
 after_success:
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.7" ]]; then coveralls; else printf "skip coveralls"; fi
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then coveralls; else printf "skip coveralls"; fi
 before_deploy:
 deploy:
   provider: pypi
@@ -34,7 +36,7 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    python: "3.7"
+    python: "3.6"
 env:
   global:
     secure: t5r8ZHBc3ZawMahCW3gWCu7AxvzYYUT/FpiS7Yqt4aasrRqY+G/fXecx+DgmYADxuxLNeW9hg8zfJDAPGT4nDNAnaFq28339lFdiiqFbiov/mmrc075YVyJP5QU24mTgolfdmGr0dqfRfTjVQqNwkDtHfyJKV/9PH1HNNFTRqg4hFYpodEtIzSCTRfWncgkfbhz8mYtLQNO7ZhixjeyPB2XdY56ylTj6LFY56ij2pnj0ZvDYj3/LtaqcZjreAXoVmAONZizc0qdHegpi3fReYtQ5BeZYQb7xsmUCcUjAVMF9ZvVoWoDawO/zG8w6qCBLYv9HGVGdwmv+8rQShZ17HVO/mQ7Djm19QkI3Cd1tJnwORWKNbWYKVm7wUPkH0f+/YLykzqeATW8wnhIsleQ4DH1Z1zwIsrXBFQd0YKH4NANW0gCfn0XXAXFlBerRCIPMBv8GB83zTMwZd1WKrfijUZyknwMG0OqZKswPXDn8zLwzT/CEv3DbRiQkN5V7qMaACfoo+FOAdEGsnylfeY/RiaiSpfO+0gJ5FmY2XHKmoMve0TG5c58A0Fc29BjDj/aYtdOgNmqBrZcSJsR3Q1mccertFxJSASdLn2HOpnspRboykNt7A5sRouMUjpkUVhi+k9plH690vrS1clnL3nPWuR8NUI9DD+KZ/lm+IutlPWE=
