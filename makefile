@@ -27,10 +27,10 @@ examples = examples/mode1-small.sh examples/mode1-large.sh examples/mode2.sh exa
 
 docs: $(docs)
 readme: docs
-example: pytest $(examples)
-test: example pytest pep8
-	coverage html
+example: $(examples)
+test: pytest example pep8
 testFull: pytest pep8 pylint
+html:
 	coverage html
 
 clean:
