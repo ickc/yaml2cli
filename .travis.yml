@@ -28,13 +28,13 @@ script:
 after_success:
   - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then coveralls; else printf "skip coveralls"; fi
 before_deploy:
-  - pip install -U twine
-  - python setup.py sdist bdist_wheel
+  # - pip install -U twine
 deploy:
   provider: pypi
   user: ickc
   password: $pypi_password
   distributions: "sdist bdist_wheel"
+  server: https://pypi.python.org/pypi
   skip_cleanup: true
   on:
     tags: true
