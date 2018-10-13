@@ -8,6 +8,8 @@ https://github.com/ickc/yaml2cli
 
 import argparse
 import os
+from collections import OrderedDict
+from functools import partial
 import sys
 import yaml
 import yamlordereddictloader
@@ -18,11 +20,12 @@ __version__ = '0.7'
 
 def make_executable(path):
     mode = os.stat(path).st_mode
-    mode |= (mode & 0o444) >> 2    # copy R bits to X
+    # copy r bits to x
+    mode |= (mode & 0o444) >> 2
     os.chmod(path, mode)
 
 
-def option2arg(option, var, loop, branch):
+def option2arg(option, var=None, loop=None, branch=None):
     '''Covert options as a Python dictionary to a string in cli arg style.
 
     Parameters
@@ -56,69 +59,75 @@ def option2arg(option, var, loop, branch):
     >>> option2arg(option, None, None, 'cori')
     '--flag --test case1 case2 -c 10 -n 3'
     '''
-    args = []
+    def get_value(value, branch=None, yaml_globals=None, yaml_locals=None):
+        local_value = value[branch] if isinstance(value, dict) else value
+        if isinstance(local_value, str) and local_value.startswith('eval '):
+            local_value = eval(local_value[5:], yaml_globals, yaml_locals)
+        return local_value
 
-    # exec all var
-    if var is not None:
-        for key, value in var.items():
-            if isinstance(value, dict):
-                local_value = value[branch]
-            else:
-                local_value = value
-            if isinstance(local_value, str):
-                exec(key + ' = "' + local_value + '"')
-            else:
-                exec(key + ' = ' + str(local_value))
+    def key_value_to_arg(key, value, branch=None, yaml_globals=None, yaml_locals=None):
+        '''return arg will be the cli in list form
 
-    # get all keys and all values into separate lists
-    values = []
-    if loop is not None:
-        keys = []
-        for key, value in loop.items():
-            keys.append(key)
-            # Cases for value of loop
-            if isinstance(value, dict):
-                local_value = value[branch]
-            else:
-                local_value = value
-            if isinstance(local_value, list):
-                values.append(local_value)
-            # eval if the string start with eval
-            elif isinstance(local_value, str) and local_value[0:5] == 'eval ':
-                values.append(eval(local_value[5:]))
-        n = len(keys)
-    # loop through combinations. If values is [], then run exactly once
-    for combinations in product(*values):
-        # only evaluate loop when loop is not None
-        if loop is not None:
-            for i in range(n):
-                if isinstance(combinations[i], str):
-                    exec(keys[i] + ' = "' + combinations[i] + '"')
-                else:
-                    exec(keys[i] + ' = ' + str(combinations[i]))
+        >>> key_value_to_arg('b', ['value1', 'value2'])
+        ['-b', 'value1', 'value2']
+        >>> key_value_to_arg('--flag', None)
+        ['--flag']
+        '''
+        result = ['-' + key if len(key) == 1 else '--' + key]
+
+        local_value = get_value(value, branch, yaml_globals, yaml_locals)
+
+        if isinstance(local_value, list):
+            result += [str(local_value_i) for local_value_i in local_value]
+        elif local_value is not None:
+            result.append(str(local_value))
+        # local_value == None is defined as the case that the arg does not
+        # require an option
+        return result
+
+    def arg_list_to_arg_str(option, keys, values, branch=None, yaml_globals=None):
+        '''keys, values are those of the loop variables
+        '''
+        yaml_locals = {
+            key: get_value(value, branch, yaml_globals)
+            for key, value in zip(keys, values)
+        } if keys else {}
+        # arg will be something like ['-b', 'value1', 'value2', '--flag']
         arg = []
         # Cases for value of option
         for key, value in option.items():
-            arg.append('-' + key if len(key) == 1 else '--' + key)
-            if isinstance(value, dict):
-                try:
-                    local_value = value[branch]
-                except KeyError:
-                    sys.stderr.write('Branch {} is not supported.'.format(branch))
-            else:
-                local_value = value
-            if isinstance(local_value, list):
-                arg += local_value
-            # eval if the string start with eval
-            elif isinstance(local_value, str) and local_value[0:5] == 'eval ':
-                arg.append(eval(local_value[5:]))
-            elif local_value is not None:
-                arg.append(str(local_value))
-        args.append(' '.join(arg))
-    return args
+            arg += key_value_to_arg(key, value, branch, yaml_globals, yaml_locals)
+        return ' '.join(arg)
+
+    yaml_globals = {} if var is None else {
+        key: get_value(value, branch)
+        for key, value in var.items()
+    }
+
+    # get keys, values from loop
+    loop_key_values = {} if loop is None else OrderedDict(
+        (key, get_value(value, branch, yaml_globals))
+        for key, value in loop.items()
+    )
+
+    # each element of args is one single command
+    # e.g. '-b value1 value2 --flag'
+    # loop through Cartesian product of values
+    # If loop_key_values is {}, then run exactly once
+    args = map(
+        partial(
+            arg_list_to_arg_str,
+            option,
+            loop_key_values.keys(),
+            branch=branch,
+            yaml_globals=yaml_globals
+        ),
+        product(*loop_key_values.values())
+    )
+    return list(args)
 
 
-def dict2command(arg_dict, branch):
+def dict2command(arg_dict, branch=None):
     '''Covert a dictionary with a predefined spec to a list of commands to be
         run in shell
 
@@ -147,7 +156,7 @@ def dict2command(arg_dict, branch):
     '''
     commands = []
     for option in arg_dict['option']:
-        for arg in option2arg(option, arg_dict.get('var', None), arg_dict.get('loop', None), branch):
+        for arg in option2arg(option, var=arg_dict.get('var', None), loop=arg_dict.get('loop', None), branch=branch):
             commands.append(arg_dict['command'] + ' ' + arg)
     return commands
 
@@ -167,7 +176,6 @@ def flatten_list(metadata, modes):
 def main(args):
     '''load the script and yaml specfied in args
     output a shell script
-    remember to ``chmod +x`` the output file
     '''
     metadata = yaml.load(args.yaml, Loader=yamlordereddictloader.Loader)
     script = args.path.read() if args.path else ''
@@ -184,7 +192,7 @@ def main(args):
         N_commands_iter = command_iter if args.N == 1 else \
             takewhile(bool, ('\n'.join(list(islice(command_iter, args.N))) for _ in count(0)))
         for i, command in enumerate(N_commands_iter):
-            i_padded = '{0:04}'.format(i)
+            i_padded = str(i).zfill(args.digit)
             filepath = os.path.join(args.outdir, args.name + '-' + i_padded + '.sh')
             with open(filepath, 'w') as f:
                 f.write(script.format(i_padded, args.name) + '\n' + command + '\n')
@@ -208,6 +216,8 @@ def cli():
                         help='Number of jobs per script. Used with -d.')
     parser.add_argument('-n', '--name', default='job',
                         help='Must be used with -d. Job no. and .sh will be appended.')
+    parser.add_argument('-D', '--digit', type=int, default=4,
+                        help='Must be used with -d. The no. of zero-filled digits. Default: 4. i.e. filename will be ...-0000.sh')
     parser.add_argument('-y', '--yaml', type=argparse.FileType('r'),
                         help='YAML metadata.', required=True)
     parser.add_argument('-p', '--path', type=argparse.FileType('r'),
