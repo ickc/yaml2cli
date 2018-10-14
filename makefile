@@ -35,7 +35,7 @@ html:
 
 clean:
 	rm -f .coverage README.html $(examples)
-	rm -rf htmlcov yaml2cli.egg-info .cache dist examples/example2
+	rm -rf htmlcov yaml2cli.egg-info .cache dist examples/example2 .pytest_cache
 	find -maxdepth 1 -type f -name '.coverage*' -delete
 	find . -type f -name "*.py[co]" -delete -or -type d -name "__pycache__" -delete
 Clean: clean
