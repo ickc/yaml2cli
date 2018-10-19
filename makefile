@@ -77,7 +77,8 @@ pypi:
 	git tag -a v$$($(python) setup.py --version) -m 'Deploy to PyPI' && git push origin v$$($(python) setup.py --version)
 ## Manually
 pypiManual:
-	$(python) setup.py sdist upload || twine upload dist/*
+	$(python) setup.py sdist bdist_wheel
+	twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
 
 init:
 	$(pip) install -r requirements.txt
