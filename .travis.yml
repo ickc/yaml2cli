@@ -1,3 +1,4 @@
+dist: bionic
 language: python
 cache: pip
 python:
@@ -11,8 +12,6 @@ python:
   - "nightly"
 matrix:
   allow_failures:
-    - python: "3.7"
-    - python: "3.8"
     - python: "3.8-dev"
     - python: "nightly"
   fast_finish: true
@@ -27,7 +26,7 @@ script:
   # see the cli installed correctly
   - make example -j3 yaml2cli=yaml2cli -B
 after_success:
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then coveralls; else printf "skip coveralls"; fi
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.8" ]]; then coveralls; else printf "skip coveralls"; fi
 deploy:
   provider: pypi
   user: ickc
@@ -36,7 +35,7 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    python: "3.6"
+    python: "3.8"
 env:
   global:
     secure: TOc24gj+wrILqtzjNwyce4wRUI4q6DS4yro/oD0fndW8MZxR/KsaLNRn5DK/coA96xsAN/JI+1ECFFcUs2zCDjyVlmhCoQKEPUE1+ZTbIamo1b19hcfgTy/Fl+T9+/lmXsA5OzGiAnNNEbSW+bqRuq3diPwrnu8yj6Wkb7Y7UVPGHPerKPzpHyOTGCJoKOZ29ZFh3gsCo7E3LHv/A1zhY1aKlg2QH0on0pSU3/oMC2+q0n/dgfBT1f2en4kRMIFHU92OgktdZDN5QRNZG0dHeK9nHjaML6ODlYN7RdlVkTOx/xMDI/K/LJ/aqqwS5fGDh4rHETMVq+hjBCcANfU1yFZSWIwrA3rIrQ2Pu5QXlzqc1ebPMR/nAHa+J+57MShTfGrFklgqx7FdSXiN+BLKiFJUG3PlvMz8cbFFnftYlnSbfy0Mvp7kfsi0dsrzYiN8T4yr/415rocI9+VHAqKN57li63Mq6xaQ/cP/7bzS8AA8O54YSODIYYfg+eENqQBkb7TRHYz6li8L1qXB3jKJYYlANUYfQJ5OAz95dQ1+jG1G5yLUWIUa3sUBpwHHXqa5GvFipgivNaui7WHqQfF5vz5x94mK4VwBb8Yr3N3KbzZnWhr+0DfWeT07OxUQJ0+WFaDH4sS1bBgXbYuHHR6yED8qLRS9uKV3fHdLG662gyg=
