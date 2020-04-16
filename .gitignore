@@ -25,3 +25,4 @@ README.html
 # examples
 examples/example2/
 examples/mode*.sh
+.mypy_cache/
