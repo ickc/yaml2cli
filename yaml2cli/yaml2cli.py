@@ -12,7 +12,7 @@ from collections import OrderedDict
 from functools import partial
 import sys
 import yaml
-import yamlordereddictloader
+import yamlloader
 from itertools import product, islice, takewhile, count
 
 __version__ = '1.0.1'
@@ -177,7 +177,7 @@ def main(args):
     '''load the script and yaml specfied in args
     output a shell script
     '''
-    metadata = yaml.load(args.yaml, Loader=yamlordereddictloader.Loader)
+    metadata = yaml.load(args.yaml, Loader=yamlloader.ordereddict.CLoader)
     script = args.path.read() if args.path else ''
     modes = flatten_list(metadata, args.mode)
     command_iter = (command for mode in modes for command in dict2command(metadata[mode], args.branch))
